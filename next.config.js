@@ -19,4 +19,5 @@ const config = {
 			  : undefined,
 };
 
+// filepath: next.config.js
 export default config;

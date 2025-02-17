@@ -35,6 +35,18 @@ fragment PaymentGatewayFragment on PaymentGateway {
 	}
 }
 
+function uniquePaymentGateways(gateways) {
+  const seen = new Set();
+  return gateways.filter(gateway => {
+    const key = gateway.id;
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+}
+
 fragment CheckoutFragment on Checkout {
 	id
 	email
@@ -340,4 +352,8 @@ mutation checkoutComplete($checkoutId: ID!) {
 			id
 		}
 	}
+}
+
+query CheckoutQuery {
+	# ... existing GraphQL query ...
 }
