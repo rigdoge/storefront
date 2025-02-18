@@ -10,12 +10,13 @@ export const OrderConfirmation = () => {
 		<main className="grid grid-cols-1 gap-x-16 lg:grid-cols-2">
 			<div>
 				<header>
-					<p className="mb-2 text-lg font-bold" data-testid="orderConfrmationTitle">
+					<p className="mb-2 text-lg font-bold text-foreground" data-testid="orderConfrmationTitle">
 						Order #{order.number} confirmed
 					</p>
-					<p className="text-base">
+					<p className="text-base text-muted-foreground">
 						Thank you for placing your order. We&apos;ve received it and we will contact you as soon as your
-						package is shipped. A confirmation email has been sent to {order.userEmail}.
+						package is shipped. A confirmation email has been sent to{" "}
+						<span className="text-foreground">{order.userEmail}</span>.
 					</p>
 				</header>
 				<OrderInfo />

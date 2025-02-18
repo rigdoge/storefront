@@ -7,9 +7,7 @@ interface SectionProps {
 
 export const Section: FC<SectionProps> = ({ children, title }) => (
 	<div className="mb-6">
-		<p color="secondary" className="mb-2 font-bold">
-			{title}
-		</p>
-		{children}
+		<p className="mb-2 font-bold text-foreground">{title}</p>
+		<div className="text-muted-foreground">{children}</div>
 	</div>
 );

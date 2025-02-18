@@ -1,9 +1,18 @@
+import withPWAInit from "@ducanh2912/next-pwa";
+
+const withPWA = withPWAInit({
+	dest: "public",
+	register: true,
+	skipWaiting: true,
+});
+
 /** @type {import('next').NextConfig} */
-const config = {
+const nextConfig = {
 	images: {
 		remotePatterns: [
 			{
-				hostname: "*",
+				protocol: "https",
+				hostname: "**",
 			},
 		],
 	},
@@ -15,9 +24,8 @@ const config = {
 		process.env.NEXT_OUTPUT === "standalone"
 			? "standalone"
 			: process.env.NEXT_OUTPUT === "export"
-			  ? "export"
-			  : undefined,
+				? "export"
+				: undefined,
 };
 
-// filepath: next.config.js
-export default config;
+export default withPWA(nextConfig);

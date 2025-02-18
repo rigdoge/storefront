@@ -284,13 +284,15 @@ export const DummyPaymentElement: React.FC<DummyPaymentElementProps> = ({ gatewa
 	};
 
 	return (
-		<div className="rounded-lg border p-4">
-			<h3 className="mb-2 font-semibold">Dummy Payment</h3>
-			<p className="mb-4 text-sm text-gray-600">This is a test payment method that will always succeed.</p>
+		<div className="rounded-lg border border-neutral-200 bg-background p-4 dark:border-neutral-800">
+			<h3 className="mb-2 font-semibold text-foreground">Dummy Payment</h3>
+			<p className="mb-4 text-sm text-muted-foreground">
+				This is a test payment method that will always succeed.
+			</p>
 			<button
 				onClick={handlePayment}
 				disabled={isProcessing}
-				className="h-12 w-full items-center rounded-md bg-neutral-900 px-6 py-3 text-base font-medium leading-6 text-white shadow hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-50"
+				className="h-12 w-full items-center rounded-md bg-primary px-6 py-3 text-base font-medium leading-6 text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
 			>
 				{isProcessing ? "Processing..." : "Pay now"}
 			</button>

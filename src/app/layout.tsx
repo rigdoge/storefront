@@ -13,6 +13,18 @@ export const metadata: Metadata = {
 	metadataBase: process.env.NEXT_PUBLIC_STOREFRONT_URL
 		? new URL(process.env.NEXT_PUBLIC_STOREFRONT_URL)
 		: undefined,
+	manifest: "/manifest.json",
+	themeColor: "#000000",
+	viewport: {
+		width: "device-width",
+		initialScale: 1,
+		maximumScale: 1,
+	},
+	appleWebApp: {
+		capable: true,
+		statusBarStyle: "default",
+		title: "Saleor Store",
+	},
 };
 
 export default function RootLayout(props: { children: ReactNode }) {
@@ -20,6 +32,11 @@ export default function RootLayout(props: { children: ReactNode }) {
 
 	return (
 		<html lang="en" className="min-h-dvh" suppressHydrationWarning>
+			<head>
+				<link rel="icon" href="/icons/icon-512.svg" />
+				<link rel="apple-touch-icon" href="/icons/icon-512.svg" />
+				<meta name="theme-color" content="#000000" />
+			</head>
 			<body className={`${inter.className} min-h-dvh`}>
 				<ThemeProvider>
 					{children}
