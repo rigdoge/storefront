@@ -17,6 +17,22 @@ mutation paymentGatewaysInitialize($checkoutId: ID!, $paymentGateways: [PaymentG
 	}
 }
 
+mutation checkoutPaymentCreate($checkoutId: ID!, $input: PaymentInput!) {
+	checkoutPaymentCreate(id: $checkoutId, input: $input) {
+		payment {
+			id
+			gateway
+			token
+			chargeStatus
+		}
+		errors {
+			field
+			message
+			code
+		}
+	}
+}
+
 mutation transactionInitialize(
 	$checkoutId: ID!
 	$action: TransactionFlowStrategyEnum
