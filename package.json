@@ -1,6 +1,6 @@
 {
 	"name": "saleor-storefront",
-	"version": "0.1.8",
+	"version": "0.1.9",
 	"private": true,
 	"type": "module",
 	"license": "BSD-3-Clause",
