@@ -1,5 +1,5 @@
 "use client";
 
 export const Overlay = () => {
-	return <div className="fixed inset-0 bg-neutral-500 bg-opacity-75 transition-opacity"></div>;
+	return <div className="fixed inset-0 bg-muted/75 transition-opacity dark:bg-muted/90"></div>;
 };

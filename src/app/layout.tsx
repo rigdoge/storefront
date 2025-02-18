@@ -3,6 +3,7 @@ import "./globals.css";
 import { type ReactNode } from "react";
 import { type Metadata } from "next";
 import { DraftModeNotification } from "@/ui/components/DraftModeNotification";
+import { ThemeProvider } from "@/ui/providers/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,10 +19,12 @@ export default function RootLayout(props: { children: ReactNode }) {
 	const { children } = props;
 
 	return (
-		<html lang="en" className="min-h-dvh">
+		<html lang="en" className="min-h-dvh" suppressHydrationWarning>
 			<body className={`${inter.className} min-h-dvh`}>
-				{children}
-				<DraftModeNotification />
+				<ThemeProvider>
+					{children}
+					<DraftModeNotification />
+				</ThemeProvider>
 			</body>
 		</html>
 	);

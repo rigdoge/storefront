@@ -1,40 +1,44 @@
-import { type ReactNode } from "react";
-import { useSummaryLineLineAttributesText, getSummaryLineProps } from "./utils";
-import { type CheckoutLineFragment, type OrderLineFragment } from "@/checkout/graphql";
-import { PhotoIcon } from "@/checkout/ui-kit/icons";
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @next/next/no-img-element */
+import { type FC } from "react";
+import { type OrderLineFragment, type CheckoutLineFragment } from "@/checkout/graphql";
+import { getFormattedMoney } from "@/checkout/lib/utils/money";
 
 export type SummaryLine = CheckoutLineFragment | OrderLineFragment;
 
 interface SummaryItemProps {
 	line: SummaryLine;
-	children: ReactNode;
+	editable?: boolean;
 }
 
-export const SummaryItem = ({ line, children }: SummaryItemProps) => {
-	const { productName, productImage } = getSummaryLineProps(line);
-
-	const attributesText = useSummaryLineLineAttributesText(line);
+export const SummaryItem: FC<SummaryItemProps> = ({ line, editable = true }) => {
+	const { quantity, totalPrice } = line;
+	// @ts-expect-error - GraphQL type definitions need to be updated
+	const productName = line.variant?.product?.name || "";
+	// @ts-expect-error - GraphQL type definitions need to be updated
+	const productImage = line.variant?.product?.thumbnail;
+	const isOrderConfirmation = !editable;
 
 	return (
-		<li key={line.id} className="flex border-b py-4 last:border-none" data-testid="SummaryItem">
-			<div className="aspect-square h-16 w-16 flex-shrink-0 overflow-hidden rounded border bg-neutral-50 md:h-24 md:w-24 md:bg-white">
-				{productImage ? (
-					<img
-						src={productImage.url}
-						alt={productImage.alt ?? ""}
-						className="h-full w-full object-contain object-center"
-					/>
-				) : (
-					<PhotoIcon />
+		<li className="flex gap-4">
+			<div className="relative h-24 w-24 shrink-0 overflow-hidden rounded border border-neutral-200 dark:border-neutral-800">
+				{productImage?.url && (
+					<img src={productImage.url} alt={productName} className="h-full w-full object-contain" />
 				)}
 			</div>
-			<div className="relative flex flex-1 flex-col justify-between pl-4">
-				<div className="flex justify-between justify-items-start gap-4">
-					<div className="flex flex-col gap-y-1">
-						<p className="font-bold">{productName}</p>
-						<p className="text-xs text-neutral-500">{attributesText}</p>
+			<div className="flex flex-1 flex-col justify-between">
+				<div className="flex justify-between">
+					<div>
+						<h4 className="text-sm font-medium text-foreground">{productName}</h4>
+						<p className="mt-1 text-sm text-muted-foreground">Quantity: {quantity}</p>
 					</div>
-					{children}
+					<div className="text-right">
+						<p className={`text-sm font-medium text-foreground ${isOrderConfirmation ? "text-base" : ""}`}>
+							{getFormattedMoney(totalPrice?.gross)}
+						</p>
+						{totalPrice?.gross && <p className="text-xs text-muted-foreground">Including tax</p>}
+					</div>
 				</div>
 			</div>
 		</li>

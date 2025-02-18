@@ -1,22 +1,35 @@
-import React, { type PropsWithChildren } from "react";
-import { Money, type MoneyProps } from "@/checkout/components/Money";
+import { type FC, type ReactNode } from "react";
+import clsx from "clsx";
+import { type Money as MoneyType } from "@/checkout/graphql";
+import { getFormattedMoney } from "@/checkout/lib/utils/money";
 
-export interface SummaryMoneyRowProps extends MoneyProps {
+interface SummaryMoneyRowProps {
 	label: string;
+	money?: MoneyType | null;
+	negative?: boolean;
+	className?: string;
+	footer?: ReactNode;
 }
 
-export const SummaryMoneyRow: React.FC<PropsWithChildren<SummaryMoneyRowProps>> = ({
+export const SummaryMoneyRow: FC<SummaryMoneyRowProps> = ({
 	label,
-	children,
-	...moneyProps
+	money,
+	negative = false,
+	className,
+	footer,
 }) => {
+	if (!money) return null;
+
+	const formattedMoney = getFormattedMoney(money);
+	const displayValue = negative ? `-${formattedMoney}` : formattedMoney;
+
 	return (
-		<div className="mb-2 flex flex-row items-center justify-between">
-			<div className="flex flex-row items-center">
-				<p color="secondary">{label}</p>
-				{children}
+		<div className={clsx("flex flex-col", className)}>
+			<div className="flex justify-between">
+				<p className="text-sm font-medium text-foreground">{label}</p>
+				<p className="text-sm font-medium text-foreground">{displayValue}</p>
 			</div>
-			<Money {...moneyProps} />
+			{footer && <div className="mt-1">{footer}</div>}
 		</div>
 	);
 };

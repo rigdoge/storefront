@@ -1,55 +1,33 @@
-import clsx from "clsx";
-import React, { type FC } from "react";
-import { Button } from "@/checkout/components/Button";
-import { TextInput } from "@/checkout/components/TextInput";
-import { useCheckoutAddPromoCodeMutation } from "@/checkout/graphql";
-import { type Classes } from "@/checkout/lib/globalTypes";
-import { useFormSubmit } from "@/checkout/hooks/useFormSubmit";
-import { FormProvider } from "@/checkout/hooks/useForm/FormProvider";
-import { useForm } from "@/checkout/hooks/useForm";
+import { type FC, useState } from "react";
+import { Button } from "@/checkout/components";
 
-interface PromoCodeFormData {
-	promoCode: string;
-}
-
-export const PromoCodeAdd: FC<Classes> = ({ className }) => {
-	const [, checkoutAddPromoCode] = useCheckoutAddPromoCodeMutation();
-
-	const onSubmit = useFormSubmit<PromoCodeFormData, typeof checkoutAddPromoCode>({
-		scope: "checkoutAddPromoCode",
-		onSubmit: checkoutAddPromoCode,
-		parse: ({ promoCode, languageCode, checkoutId }) => ({
-			promoCode,
-			checkoutId,
-			languageCode,
-		}),
-		onSuccess: ({ formHelpers: { resetForm } }) => resetForm(),
-	});
-
-	const form = useForm<PromoCodeFormData>({
-		onSubmit,
-		initialValues: { promoCode: "" },
-	});
-	const {
-		values: { promoCode },
-	} = form;
-
-	const showApplyButton = promoCode.length > 0;
+export const PromoCodeAdd: FC = () => {
+	const [isExpanded, setIsExpanded] = useState(false);
 
 	return (
-		<FormProvider form={form}>
-			<div className={clsx("relative my-4", className)}>
-				<TextInput required={false} name="promoCode" label="Add gift card or discount code" />
-				{showApplyButton && (
-					<Button
-						className="absolute bottom-2.5 right-3"
-						variant="tertiary"
-						ariaLabel="apply"
-						label="Apply"
-						type="submit"
+		<div className="mt-6">
+			{isExpanded ? (
+				<div className="flex flex-col gap-2">
+					<input
+						type="text"
+						placeholder="Enter promo code"
+						className="w-full rounded border border-neutral-200 bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-neutral-300 focus:outline-none dark:border-neutral-800 dark:focus:border-neutral-700"
 					/>
-				)}
-			</div>
-		</FormProvider>
+					<div className="flex gap-2">
+						<Button variant="secondary" className="flex-1" onClick={() => setIsExpanded(false)}>
+							Cancel
+						</Button>
+						<Button className="flex-1">Apply</Button>
+					</div>
+				</div>
+			) : (
+				<button
+					onClick={() => setIsExpanded(true)}
+					className="text-sm text-muted-foreground hover:text-foreground"
+				>
+					Do you have a gift card or discount code?
+				</button>
+			)}
+		</div>
 	);
 };

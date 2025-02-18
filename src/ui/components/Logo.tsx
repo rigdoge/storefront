@@ -1,25 +1,11 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { LinkWithChannel } from "../atoms/LinkWithChannel";
 
-const companyName = "ACME";
-
-export const Logo = () => {
-	const pathname = usePathname();
-
-	if (pathname === "/") {
-		return (
-			<h1 className="flex items-center font-bold" aria-label="homepage">
-				{companyName}
-			</h1>
-		);
-	}
+export function Logo() {
 	return (
-		<div className="flex items-center font-bold">
-			<LinkWithChannel aria-label="homepage" href="/">
-				{companyName}
-			</LinkWithChannel>
-		</div>
+		<LinkWithChannel href="/" className="flex items-center gap-2">
+			<span className="text-lg font-bold text-foreground">Saleor Store</span>
+		</LinkWithChannel>
 	);
-};
+}

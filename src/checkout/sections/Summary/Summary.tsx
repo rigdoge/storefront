@@ -4,18 +4,10 @@ import { SummaryItem, type SummaryLine } from "./SummaryItem";
 import { PromoCodeAdd } from "./PromoCodeAdd";
 import { SummaryMoneyRow } from "./SummaryMoneyRow";
 import { SummaryPromoCodeRow } from "./SummaryPromoCodeRow";
-import { SummaryItemMoneyEditableSection } from "./SummaryItemMoneyEditableSection";
 import { ChevronDownIcon } from "@/checkout/ui-kit/icons";
-
 import { getFormattedMoney } from "@/checkout/lib/utils/money";
-import { Divider, Money, Title } from "@/checkout/components";
-import {
-	type CheckoutLineFragment,
-	type GiftCardFragment,
-	type Money as MoneyType,
-	type OrderLineFragment,
-} from "@/checkout/graphql";
-import { SummaryItemMoneySection } from "@/checkout/sections/Summary/SummaryItemMoneySection";
+import { Title } from "@/checkout/components";
+import { type GiftCardFragment, type Money as MoneyType } from "@/checkout/graphql";
 import { type GrossMoney, type GrossMoneyWithTax } from "@/checkout/lib/globalTypes";
 
 interface SummaryProps {
@@ -36,74 +28,83 @@ export const Summary: FC<SummaryProps> = ({
 	subtotalPrice,
 	giftCards = [],
 	voucherCode,
-	shippingPrice,
 	discount,
+	shippingPrice,
 }) => {
+	const summaryLines = lines.filter((line) => line.quantity > 0);
+
+	const isOrderConfirmation = !editable;
+
 	return (
-		<div
-			className={clsx(
-				"z-0 flex h-fit w-full flex-col",
-				"before:fixed before:bottom-0 before:left-1/2 before:top-0 before:-z-10 before:w-1/2 before:border-l before:border-neutral-200 before:bg-neutral-50 before:content-none before:lg:content-['']",
-			)}
-		>
-			<details open className="group">
-				<summary className="-mb-2 flex cursor-pointer flex-row items-center pt-4">
-					<Title>Summary</Title>
-					<ChevronDownIcon className="mb-2 group-open:rotate-180" />
-				</summary>
-				<ul className="py-2" data-testid="SummaryProductList">
-					{lines.map((line) => (
-						<SummaryItem line={line} key={line?.id}>
-							{editable ? (
-								<SummaryItemMoneyEditableSection line={line as CheckoutLineFragment} />
-							) : (
-								<SummaryItemMoneySection line={line as OrderLineFragment} />
-							)}
-						</SummaryItem>
-					))}
-				</ul>
-			</details>
-			{editable && (
-				<>
-					<PromoCodeAdd />
-					<Divider />
-				</>
-			)}
-			<div className="mt-4 flex max-w-full flex-col">
-				<SummaryMoneyRow label="Subtotal" money={subtotalPrice?.gross} ariaLabel="subtotal price" />
-				{voucherCode && (
-					<SummaryPromoCodeRow
-						editable={editable}
-						promoCode={voucherCode}
-						ariaLabel="voucher"
-						label={`Voucher code: ${voucherCode}`}
-						money={discount}
-						negative
-					/>
-				)}
-				{giftCards.map(({ currentBalance, displayCode, id }) => (
-					<SummaryPromoCodeRow
-						key={id}
-						editable={editable}
-						promoCodeId={id}
-						ariaLabel="gift card"
-						label={`Gift Card: •••• •••• ${displayCode}`}
-						money={currentBalance}
-						negative
-					/>
-				))}
-				<SummaryMoneyRow label="Shipping cost" ariaLabel="shipping cost" money={shippingPrice?.gross} />
-				<Divider className="my-4" />
-				<div className="flex flex-row items-baseline justify-between pb-4">
-					<div className="flex flex-row items-baseline">
-						<p className="font-bold">Total price</p>
-						<p color="secondary" className="ml-2">
-							includes {getFormattedMoney(totalPrice?.tax)} tax
-						</p>
+		<section className="summary">
+			<div className="sticky top-8">
+				<div className="rounded border border-neutral-200 bg-background p-4 dark:border-neutral-800">
+					<div className="flex justify-between">
+						<Title>Summary</Title>
+						{editable && (
+							<div className="flex items-center gap-2">
+								<span className="text-sm text-muted-foreground">
+									{summaryLines.length} {summaryLines.length === 1 ? "item" : "items"}
+								</span>
+								<ChevronDownIcon />
+							</div>
+						)}
 					</div>
-					<Money ariaLabel="total price" money={totalPrice?.gross} data-testid="totalOrderPrice" />
+					<ul className="mt-6 flex flex-col gap-4">
+						{summaryLines.map((line) => (
+							<SummaryItem editable={editable} key={line.id} line={line} />
+						))}
+					</ul>
+					{editable && <PromoCodeAdd />}
+					<div className="mt-6 border-t border-neutral-200 pt-6 dark:border-neutral-800">
+						<SummaryMoneyRow
+							label="Subtotal"
+							money={subtotalPrice?.gross}
+							className={clsx({
+								"text-sm": !isOrderConfirmation,
+							})}
+						/>
+						{voucherCode && (
+							<SummaryPromoCodeRow
+								editable={editable}
+								label="Discount"
+								money={discount}
+								negative
+								promoCode={voucherCode}
+							/>
+						)}
+						{giftCards.map(({ id, last4CodeChars, currentBalance }) => (
+							<SummaryPromoCodeRow
+								editable={editable}
+								key={id}
+								label={`Gift Card (${last4CodeChars})`}
+								money={currentBalance}
+								negative
+								promoCodeId={id}
+							/>
+						))}
+						<SummaryMoneyRow
+							label="Shipping"
+							money={shippingPrice.gross}
+							className={clsx({
+								"text-sm": !isOrderConfirmation,
+							})}
+						/>
+						<SummaryMoneyRow
+							className="border-t border-neutral-200 pt-4 dark:border-neutral-800"
+							label="Total"
+							money={totalPrice?.gross}
+							footer={
+								totalPrice?.tax && (
+									<div className="text-xs text-muted-foreground">
+										Including {getFormattedMoney(totalPrice.tax)} tax
+									</div>
+								)
+							}
+						/>
+					</div>
 				</div>
 			</div>
-		</div>
+		</section>
 	);
 };

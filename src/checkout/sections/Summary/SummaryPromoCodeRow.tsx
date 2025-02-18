@@ -1,43 +1,36 @@
-import React from "react";
-import { SummaryMoneyRow, type SummaryMoneyRowProps } from "./SummaryMoneyRow";
-import { IconButton } from "@/checkout/components/IconButton";
-import { RemoveIcon } from "@/checkout/ui-kit/icons";
-import { useCheckoutRemovePromoCodeMutation } from "@/checkout/graphql";
-import { useCheckout } from "@/checkout/hooks/useCheckout";
-import { isOrderConfirmationPage } from "@/checkout/lib/utils/url";
+import { type FC } from "react";
+import { SummaryMoneyRow } from "./SummaryMoneyRow";
+import { type Money as MoneyType } from "@/checkout/graphql";
+import { TrashIcon } from "@/checkout/ui-kit/icons";
 
-interface SummaryPromoCodeRowProps extends SummaryMoneyRowProps {
+interface SummaryPromoCodeRowProps {
+	label: string;
+	money?: MoneyType | null;
 	promoCode?: string;
 	promoCodeId?: string;
-	editable: boolean;
+	editable?: boolean;
+	negative?: boolean;
 }
 
-export const SummaryPromoCodeRow: React.FC<SummaryPromoCodeRowProps> = ({
-	promoCode,
-	promoCodeId,
-	editable,
-	...rest
+export const SummaryPromoCodeRow: FC<SummaryPromoCodeRowProps> = ({
+	label,
+	money,
+	_promoCode,
+	_promoCodeId,
+	editable = true,
+	negative = false,
 }) => {
-	const { checkout } = useCheckout({ pause: isOrderConfirmationPage() });
-	const [, checkoutRemovePromoCode] = useCheckoutRemovePromoCodeMutation();
-
-	const onDelete = () => {
-		const variables = promoCode ? { promoCode: promoCode } : { promoCodeId: promoCodeId as string };
-
-		void checkoutRemovePromoCode({
-			languageCode: "EN_US",
-			checkoutId: checkout.id,
-			...variables,
-		});
-	};
-
 	return (
-		<SummaryMoneyRow {...rest}>
+		<div className="group relative">
+			<SummaryMoneyRow label={label} money={money} negative={negative} className="text-sm" />
 			{editable && (
-				<div>
-					<IconButton onClick={onDelete} ariaLabel="remove promo code" icon={<RemoveIcon aria-hidden />} />
-				</div>
+				<button
+					className="absolute -right-8 top-0 hidden p-2 text-muted-foreground hover:text-foreground group-hover:block"
+					aria-label="Remove promo code"
+				>
+					<TrashIcon className="h-4 w-4" />
+				</button>
 			)}
-		</SummaryMoneyRow>
+		</div>
 	);
 };
